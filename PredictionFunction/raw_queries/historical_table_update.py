@@ -244,17 +244,21 @@ END AS "fixed_cost",
         select
           ar.*,
           ar."total_net" - COALESCE(ar."cost",0) as "gross_profit",
+          ar."total_net"- COALESCE(ar."cost",0)- COALESCE(ar."delivery_cost",0) - COALESCE(ar."employee_cost",0) as "operating_profit",
           ar."total_net"- COALESCE(ar."cost",0)- COALESCE(ar."delivery_cost",0) - COALESCE(ar."rent",0) - COALESCE(ar."employee_cost",0) - fixed_cost as "net_profit",
           case when
           COALESCE(ar."total_net",0) = 0 then 0
           else (ar."total_net" - COALESCE(ar."cost",0))*100/ar."total_net"
           end as "gross_profit_percentage",
           case when COALESCE(ar."total_net",0)=0 then 0
+          else (ar."total_net"- COALESCE(ar."cost",0)- COALESCE(ar."delivery_cost",0) - COALESCE(ar."employee_cost",0))*100/ar."total_net"
+          end as "operating_profit_percentage",
+          case when COALESCE(ar."total_net",0)=0 then 0
           else (ar."total_net"- COALESCE(ar."cost",0)- COALESCE(ar."delivery_cost",0) - COALESCE(ar."rent",0) - COALESCE(ar."employee_cost",0) - fixed_cost)*100/ar."total_net" 
           end as "net_profit_percentage"
           from TempData ar
   )
- insert into public."HistoricalMasterTable"(	id, date, gastronomic_day, total_net, cost, gross_profit, delivery_cost, rent, employee_cost, fixed_cost, net_profit, gross_profit_percentage, net_profit_percentage, company, restaurant)
+ insert into public."HistoricalMasterTable"(	id, date, gastronomic_day, total_net, cost, gross_profit, delivery_cost, rent, employee_cost, fixed_cost, net_profit, gross_profit_percentage, net_profit_percentage, company, restaurant , operating_profit, operating_profit_percentage)
 select 
 	FLOOR(RANDOM() * 9223372036854775807::bigint) + 1::BIGINT,
 	hv.period,
@@ -270,7 +274,9 @@ select
 	COALESCE(gross_profit_percentage,0),
 	COALESCE(net_profit_percentage,0),
 	hv.company,
-	hv.restaurant
+	hv.restaurant,
+    COALESCE(operating_profit,0),
+    COALESCE(operating_profit_percentage,0)
 	from HistoricalData hv
     ON CONFLICT (date,restaurant,company)
     DO UPDATE SET
@@ -283,5 +289,7 @@ select
         fixed_cost = EXCLUDED.fixed_cost,
         net_profit = EXCLUDED.net_profit,
         gross_profit_percentage = EXCLUDED.gross_profit_percentage,
-        net_profit_percentage = EXCLUDED.net_profit_percentage
+        net_profit_percentage = EXCLUDED.net_profit_percentage,
+        operating_profit = EXCLUDED.operating_profit,
+        operating_profit_percentage = EXCLUDED.operating_profit_percentage 
 """
