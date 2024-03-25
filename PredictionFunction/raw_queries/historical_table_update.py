@@ -20,7 +20,7 @@ OverallRequiredSalesData AS (
                                                 END,
                                           0)
                                         ) AS "cost",
-                  SUM(CASE WHEN "user_name" = 'nS3 Deliverect' THEN COALESCE("total_gross",0) * 0.25 ELSE 0 END) as "delivery_cost",
+                  SUM(CASE WHEN "user_name" = 'nS3 Deliverect' THEN COALESCE("total_net",0) * 0.25 ELSE 0 END) as "delivery_cost",
                       SUM("total_net") as "total_net"
         FROM public."SalesData"
           group by 1,2,3,4
