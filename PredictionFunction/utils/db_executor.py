@@ -7,7 +7,7 @@ from datetime import datetime
 
 
 def execute_query(query, query_name):
-    today = datetime.now()
+    today = datetime.now().replace(hour=23, minute=0, second=0, microsecond=0)
     start_of_month = today.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
     try:
         with psycopg2.connect(**params) as conn:
