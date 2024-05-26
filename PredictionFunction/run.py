@@ -8,7 +8,7 @@ def main(myTimer: func.TimerRequest) -> None:
     if myTimer.past_due:
         logging.info("The timer is past due!")
 
-    logging.info("Python timer trigger function executed.")
+    logging.info("Python timer trigger function starting.")
 
     all_queries = [
         (historical_table_update.raw_query, "historical_table_update"),

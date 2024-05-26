@@ -35,9 +35,9 @@ SELECT
     crl.company,
     crl.restaurant,
 	CASE 
-		WHEN EXTRACT(HOUR FROM ts.hour AT TIME ZONE 'CEST') < 7 
-		THEN (ts.hour AT TIME ZONE 'CEST' - INTERVAL '1 day')::date
-		ELSE (ts.hour AT TIME ZONE 'CEST')::date
+		WHEN EXTRACT(HOUR FROM ts.hour) < 7 
+		THEN (ts.hour - INTERVAL '1 day')::date
+		ELSE (ts.hour)::date
 	END AS gastronomic_day,    
         COALESCE(osd.cost, 0) AS cost,
     COALESCE(osd.delivery_cost, 0) AS delivery_cost,
@@ -59,9 +59,9 @@ TimeStampPredictionData as  (
 		SELECT 
     ts.hour as date,
     		CASE 
-		WHEN EXTRACT(HOUR FROM ts.hour AT TIME ZONE 'CEST') < 7 
-		THEN (ts.hour AT TIME ZONE 'CEST' - INTERVAL '1 day')::date
-		ELSE (ts.hour AT TIME ZONE 'CEST')::date
+		WHEN EXTRACT(HOUR FROM ts.hour) < 7 
+		THEN (ts.hour - INTERVAL '1 day')::date
+		ELSE (ts.hour)::date
 	END AS gastronomic_day,
     crl.company,
     crl.restaurant,
